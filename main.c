@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <conio.h>
 
 void display_menu() {
     printf("\nMeniu Principal:\n");
@@ -16,11 +17,17 @@ void display_menu() {
 
 int main() {
     int choice;
+    int back_to_main = 0;
 
     while (1) {
-        display_menu();
-        printf("Selectati o optiune: ");
-        scanf("%d", &choice);
+        if (!back_to_main) {
+            display_menu();
+            printf("Selectați o opțiune: ");
+            choice = getch(); 
+        } else {
+            choice = '9';
+            back_to_main = 0;
+        }
 
         switch (choice) {
             case 1:
