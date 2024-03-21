@@ -1,9 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <conio.h>
 
 #define MAX_ACCOUNTS 100
+
+void clear_screen()
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
 
 typedef struct {
     char account_num[20];
@@ -15,14 +23,7 @@ typedef struct {
     Account accounts[MAX_ACCOUNTS];
     int count;
 } BankSystem;
-void clrscr() {
-    #ifdef _WIN32
-        system("cls");
-    #else
-        // ANSI escape code to clear the screen and reset cursor position.
-        printf("\033[H\033[J");
-    #endif
-}
+
 void display_menu() {
     printf("\nMeniu Principal:\n");
     printf("1. Afisare conturi\n");
@@ -33,7 +34,6 @@ void display_menu() {
     printf("6. Cautare dupa numar de cont\n");
     printf("7. Cautare dupa nume de client\n");
     printf("8. Iesire\n");
-
 }
 
 void display_accounts(Account accounts[], int count) {
@@ -130,13 +130,20 @@ void search_by_customer_name(Account accounts[], int count, char customer_name[]
         printf("Niciun cont asociat acestui nume de client!\n");
     }
 }
+void back_to_menu() {
+    printf("\nApasa orice tasta pentru a reveni la meniul principal...");
+    getchar(); // Așteaptă ca utilizatorul să apese o tastă
+    getchar(); // Așteaptă o a doua dată pentru a curăța buffer-ul
+    clear_screen(); // Curăță ecranul
+    display_menu(); // Afișează meniul
+}
 
 int main() {
     BankSystem bank_system;
     bank_system.count = 0;
     int choice;
 
-    while (1) {
+    do {
         display_menu();
         printf("Selectati o optiune: ");
         scanf("%d", &choice);
@@ -145,12 +152,15 @@ int main() {
         switch (choice) {
             case 1:
                 display_accounts(bank_system.accounts, bank_system.count);
+                back_to_menu();
                 break;
             case 2:
                 add_account(bank_system.accounts, &bank_system.count);
+                back_to_menu();
                 break;
             case 3:
                 delete_account(bank_system.accounts, &bank_system.count);
+                back_to_menu();
                 break;
             case 4: {
                 char account_num[20];
@@ -160,6 +170,7 @@ int main() {
                 printf("Introduceti suma de depus: ");
                 scanf("%f", &amount);
                 deposit(bank_system.accounts, bank_system.count, account_num, amount);
+                back_to_menu();
                 break;
             }
             case 5: {
@@ -170,6 +181,7 @@ int main() {
                 printf("Introduceti suma de retras: ");
                 scanf("%f", &amount);
                 withdraw(bank_system.accounts, bank_system.count, account_num, amount);
+                back_to_menu();
                 break;
             }
             case 6: {
@@ -177,6 +189,7 @@ int main() {
                 printf("Introduceti numarul de cont de cautat: ");
                 scanf("%s", account_num);
                 search_by_account_number(bank_system.accounts, bank_system.count, account_num);
+                back_to_menu();
                 break;
             }
             case 7: {
@@ -184,11 +197,12 @@ int main() {
                 printf("Introduceti numele clientului de cautat: ");
                 scanf("%s", customer_name);
                 search_by_customer_name(bank_system.accounts, bank_system.count, customer_name);
+                back_to_menu();
                 break;
             }
             case 8:
                 printf("La revedere!\n");
-            clrscr();
+                return 0;
         }
-    }
+    } while (1);
 }
