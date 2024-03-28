@@ -132,12 +132,34 @@ void search_by_customer_name(Account accounts[], int count, char customer_name[]
 }
 void back_to_menu() {
     printf("\nApasa orice tasta pentru a reveni la meniul principal...");
-    getchar(); // Așteaptă ca utilizatorul să apese o tastă
-    getchar(); // Așteaptă o a doua dată pentru a curăța buffer-ul
-    clear_screen(); // Curăță ecranul
-    display_menu(); // Afișează meniul
+    getchar();
+    getchar();
+    clear_screen();
+    display_menu();
+}
+void readFile(Account accounts[100], int i){
+    FILE *f = fopen("accounts.txt", "r");
+    if (f == NULL)
+        return;
+    while (fscanf(f, "%d %s %d", &accounts[i].account_num, &accounts[i].customer_name, &accounts[i].balance ) == 3)
+        (i)++;
+    fclose(f);
 }
 
+void writeFile(Account * accounts, int n){
+    FILE *f = fopen("accounts.txt", "w");
+    for(int i=0; i<n; i++)
+        fprintf(f, "%d %s %d\n", accounts[i].account_num, accounts[i].customer_name, accounts[i].balance );
+    fclose(f);
+}
+/*    Account accounts[100];
+    int n = 0;
+    int count;
+    readFile(accounts, &n);
+    accounts[n] = count;
+    n++;
+    writeFile(accounts, n);
+*/
 int main() {
     BankSystem bank_system;
     bank_system.count = 0;
