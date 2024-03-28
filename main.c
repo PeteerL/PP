@@ -137,39 +137,48 @@ void back_to_menu() {
     clear_screen();
     display_menu();
 }
-void readFile(Account accounts[100], int i){
+void readFile(BankSystem *bank_system) {
     FILE *f = fopen("accounts.txt", "r");
-    if (f == NULL)
+    if (f == NULL) {
+        printf("Eroare la deschiderea fisierului.\n");
         return;
-    while (fscanf(f, "%d %s %d", &accounts[i].account_num, &accounts[i].customer_name, &accounts[i].balance ) == 3)
-        (i)++;
+    }
+
+    while (fscanf(f, "%s %s %f", bank_system->accounts[bank_system->count].account_num,
+                  bank_system->accounts[bank_system->count].customer_name,
+                  &bank_system->accounts[bank_system->count].balance) == 3) {
+        (bank_system->count)++;
+    }
+
     fclose(f);
 }
 
-void writeFile(Account * accounts, int n){
+void writeFile(BankSystem *bank_system) {
     FILE *f = fopen("accounts.txt", "w");
-    for(int i=0; i<n; i++)
-        fprintf(f, "%d %s %d\n", accounts[i].account_num, accounts[i].customer_name, accounts[i].balance );
+    if (f == NULL) {
+        printf("Eroare la deschiderea fisierului.\n");
+        return;
+    }
+
+    for (int i = 0; i < bank_system->count; i++) {
+        fprintf(f, "%s %s %.2f\n", bank_system->accounts[i].account_num,
+                bank_system->accounts[i].customer_name,
+                bank_system->accounts[i].balance);
+    }
+
     fclose(f);
 }
-/*    Account accounts[100];
-    int n = 0;
-    int count;
-    readFile(accounts, &n);
-    accounts[n] = count;
-    n++;
-    writeFile(accounts, n);
-*/
+
 int main() {
     BankSystem bank_system;
     bank_system.count = 0;
     int choice;
+    readFile(&bank_system);
 
     do {
         display_menu();
         printf("Selectati o optiune: ");
         scanf("%d", &choice);
-
 
         switch (choice) {
             case 1:
@@ -178,10 +187,12 @@ int main() {
                 break;
             case 2:
                 add_account(bank_system.accounts, &bank_system.count);
+                writeFile(&bank_system);
                 back_to_menu();
                 break;
             case 3:
                 delete_account(bank_system.accounts, &bank_system.count);
+                writeFile(&bank_system);
                 back_to_menu();
                 break;
             case 4: {
@@ -192,6 +203,7 @@ int main() {
                 printf("Introduceti suma de depus: ");
                 scanf("%f", &amount);
                 deposit(bank_system.accounts, bank_system.count, account_num, amount);
+                writeFile(&bank_system);
                 back_to_menu();
                 break;
             }
@@ -203,6 +215,7 @@ int main() {
                 printf("Introduceti suma de retras: ");
                 scanf("%f", &amount);
                 withdraw(bank_system.accounts, bank_system.count, account_num, amount);
+                writeFile(&bank_system);
                 back_to_menu();
                 break;
             }
@@ -224,6 +237,7 @@ int main() {
             }
             case 8:
                 printf("La revedere!\n");
+                writeFile(&bank_system);
                 return 0;
         }
     } while (1);
