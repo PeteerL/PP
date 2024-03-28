@@ -137,16 +137,19 @@ void back_to_menu() {
     clear_screen();
     display_menu();
 }
+
 void readFile(BankSystem *bank_system) {
-    FILE *f = fopen("accounts.txt", "r");
+    FILE *f = fopen("accounts.csv", "r");
     if (f == NULL) {
         printf("Eroare la deschiderea fisierului.\n");
         return;
     }
 
-    while (fscanf(f, "%s %s %f", bank_system->accounts[bank_system->count].account_num,
-                  bank_system->accounts[bank_system->count].customer_name,
-                  &bank_system->accounts[bank_system->count].balance) == 3) {
+    char line[100];
+    while (fgets(line, sizeof(line), f)) {
+        sscanf(line, "%[^,],%[^,],%f\n", bank_system->accounts[bank_system->count].account_num,
+               bank_system->accounts[bank_system->count].customer_name,
+               &bank_system->accounts[bank_system->count].balance);
         (bank_system->count)++;
     }
 
@@ -154,20 +157,21 @@ void readFile(BankSystem *bank_system) {
 }
 
 void writeFile(BankSystem *bank_system) {
-    FILE *f = fopen("accounts.txt", "w");
+    FILE *f = fopen("accounts.csv", "w");
     if (f == NULL) {
         printf("Eroare la deschiderea fisierului.\n");
         return;
     }
 
     for (int i = 0; i < bank_system->count; i++) {
-        fprintf(f, "%s %s %.2f\n", bank_system->accounts[i].account_num,
+        fprintf(f, "%s,%s,%.2f\n", bank_system->accounts[i].account_num,
                 bank_system->accounts[i].customer_name,
                 bank_system->accounts[i].balance);
     }
 
     fclose(f);
 }
+
 
 int main() {
     BankSystem bank_system;
